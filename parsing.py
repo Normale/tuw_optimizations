@@ -17,10 +17,6 @@ def read_graph(filepath):
             graph.add_nodes_from(vertices)
             graph.add_edge(vertices[0], vertices[1], weight=edges[0])
             graph.add_edge(vertices[1], vertices[0], weight=edges[1])
-    distances = nx.all_pairs_dijkstra_path_length(graph, weight="weight")
-    distances_dict = dict(list(distances))
-    paths = nx.all_pairs_dijkstra_path(graph, weight="weight")
-    paths = dict(list(paths))
     return graph
 
 def get_graph_dict(graph: nx.Graph):
@@ -35,5 +31,27 @@ if __name__ == '__main__':
     line_g1 = convert_to_line_graph(g1)
     result = get_graph_dict(line_g1)
     g, distances, paths = result["graph"], result["distances"], result["paths"]
-    print(distances[(1,2)][(2,3)]) # distance from (1,2) to (2,3)
+    print(distances[(1,2)][(2,3)])
+    print(distances[(2,3)][(1,2)]) 
     print(paths[(1,2)][(2,3)]) # path from (1,2) to (2,3)
+
+
+    # Dummy example discussed
+    graph = nx.DiGraph()
+    graph.add_nodes_from([0, 1, 2, 3])
+    graph.add_edge(0, 1, weight=4)
+    graph.add_edge(1, 0, weight=3)
+    graph.add_edge(0, 2, weight=1)
+    graph.add_edge(2, 0, weight=2)
+    graph.add_edge(1, 2, weight=5)
+    graph.add_edge(2, 1, weight=6)
+    graph.add_edge(2, 3, weight=3)
+    graph.add_edge(3, 2, weight=5)
+    line_g = convert_to_line_graph(graph)
+    result = get_graph_dict(line_g)
+    g, distances, paths = result["graph"], result["distances"], result["paths"]
+    print(distances[(1,2)][(2,3)])
+    print(distances[(2,3)][(1,2)]) 
+    # The following two are not found, KeyError is raised
+    #print(distances[(1,2)][(3,2)])
+    #print(distances[(3,2)][(1,2)])

@@ -1,5 +1,5 @@
 import networkx as nx
-
+from line_graph import convert_to_line_graph
 def read_graph(filepath):
     """
     Function reading a graph file and creating a graph from it.
@@ -21,10 +21,19 @@ def read_graph(filepath):
     distances_dict = dict(list(distances))
     paths = nx.all_pairs_dijkstra_path(graph, weight="weight")
     paths = dict(list(paths))
+    return graph
+
+def get_graph_dict(graph: nx.Graph):
+    distances = nx.all_pairs_dijkstra_path_length(graph, weight="weight")
+    distances_dict = dict(list(distances))
+    paths = nx.all_pairs_dijkstra_path(graph, weight="weight")
+    paths = dict(list(paths))
     return {"graph": graph, "distances": distances_dict, "paths": paths}
 
 if __name__ == '__main__':
-    result = read_graph("instances\\toy")
+    g1 = read_graph("instances\\toy")
+    line_g1 = convert_to_line_graph(g1)
+    result = get_graph_dict(line_g1)
     g, distances, paths = result["graph"], result["distances"], result["paths"]
-    print(distances[1][2]) # distance from 1 to 2
-    print(paths[1][2]) # path from 1 to 2
+    print(distances[(1,2)][(2,3)]) # distance from (1,2) to (2,3)
+    print(paths[(1,2)][(2,3)]) # path from (1,2) to (2,3)

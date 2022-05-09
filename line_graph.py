@@ -1,19 +1,22 @@
 import networkx as nx
 
-
 def convert_to_line_graph(g: nx.Graph):
     L = nx.line_graph(g)
     L2 = nx.DiGraph()
     for l_edge in L.edges():
         src, dest = l_edge
-        if src == dest[::-1]:
+        # uniformising nodes of the line graph to have lower first node
+        if src[0] > src[1]:
+            src = (src[1], src[0])
+        if dest[0] > dest[1]:
+            dest = (dest[1], dest[0])
+            
+        if src == dest:
             continue
         # edges 0-2 and 2-0 are different for networkx, but we treat them as the same
         if (
             L2.has_edge(src, dest)
-            or L2.has_edge(src, dest[::-1])
-            or L2.has_edge(src[::-1], dest)
-            or L2.has_edge(src[::-1], dest[::-1])
+            or L2.has_edge(dest, src)
         ):
             continue
         L2.add_node(src)

@@ -51,7 +51,9 @@ if __name__ == '__main__':
     result = get_graph_dict(line_g)
     g, distances, paths = result["graph"], result["distances"], result["paths"]
     print(distances[(1,2)][(2,3)])
-    print(distances[(2,3)][(1,2)]) 
-    # The following two are not found, KeyError is raised
+    print(distances[(2,3)][(1,2)])
+    print(distances[(2,3)][(0,1)])
+    print(distances[(0,1)][(2,3)])
+    # The following two are not found, KeyError is raised, because the line graph nodes are uniformised to have the lower indexed node first (2,3 instead of 3,2)
     #print(distances[(1,2)][(3,2)])
     #print(distances[(3,2)][(1,2)])

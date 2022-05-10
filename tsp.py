@@ -1,5 +1,5 @@
 from ortools.constraint_solver import pywrapcp, routing_enums_pb2
-from parsing import read_graph
+from parsing import read_graph, get_graph_dict
 
 def print_solution(manager, routing, assignment):
     index = routing.Start(0)
@@ -11,8 +11,20 @@ def print_solution(manager, routing, assignment):
         index = assignment.Value(routing.NextVar(index))
         route_distance += routing.GetArcCostForVehicle(previous_index, index, 0)
     out_string += '{}\n'.format(manager.IndexToNode(index))
-    out_string += 'Distance of the route: {}\n'.format(route_distance)
+    out_string += 'Distance of the route: {}'.format(route_distance)
     print(out_string)
+
+def solution(routing, assignment):
+    sequence = []
+    index = routing.Start(0)
+    route_distance = 0
+    while not routing.IsEnd(index):
+        sequence.append(index)
+        previous_index = index
+        index = assignment.Value(routing.NextVar(index))
+        route_distance += routing.GetArcCostForVehicle(previous_index, index, 0)
+    sequence.append(0)
+    return sequence, route_distance
 
 def define_distance(distances, manager):
     def distance(initial, final):
@@ -21,9 +33,8 @@ def define_distance(distances, manager):
         return distances[from_node + 1][to_node + 1]
     return distance
 
-def setup(instance):
+def setup(distances):
     # Create the routing index manager.
-    distances = read_graph("instances\\" + instance)["distances"]
     manager = pywrapcp.RoutingIndexManager(len(distances), 1, 0)
     routing = pywrapcp.RoutingModel(manager)
     
@@ -33,8 +44,8 @@ def setup(instance):
 
     return manager, routing
 
-def main(instance):
-    manager, routing = setup(instance)
+def tsp(distances):
+    manager, routing = setup(distances)
 
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
     search_parameters.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
@@ -43,6 +54,7 @@ def main(instance):
 
     if assignment:
         print_solution(manager, routing, assignment)
+        return solution(routing, assignment)
 
 if __name__ == '__main__':
-    main("toy")
+    tsp(get_graph_dict(read_graph("instances\\toy"))["distances"])

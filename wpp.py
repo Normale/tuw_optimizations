@@ -86,7 +86,12 @@ def print_solution(wpp_path, distance, nodes):
     # print(decoded_path)
 
 if __name__ == '__main__':
-    wpp(read_graph("instances\\WA0532"))
+    import os
+    for f in sorted(os.listdir("instances"))[1:10]:
+        # print(f)
+        fpath = os.path.join("instances", f)
+        print(fpath)
+        wpp(read_graph(fpath))
 
     
     # # Dummy example discussed

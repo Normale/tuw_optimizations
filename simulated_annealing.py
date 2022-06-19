@@ -1,4 +1,5 @@
-from numpy import exp, random
+from numpy import random
+from mpmath import exp
 import networkx as nx
 
 def evaluate(graph, solution):
@@ -39,8 +40,9 @@ def mutate(solution):
     for i in range(len(indexes) - 1):
         if indexes[i + 1] - indexes[i] > 2:
             options.append(indexes[i])
-    index = options[random.randint(0, len(options) - 1)]
     # print("Options:", options)
+    if (len(options) > 0):
+        index = random.choice(options)
     # print("Index:", index)
 
     # Switch direction of the cycle
@@ -111,9 +113,10 @@ def anneal(graph, solution, score):
     return best_solution, best_score
 
 def print_sim(solution, score):
-    out_string = 'Best route:\n' + str(solution[0])
-    for node in solution[1:]:
-        out_string += " -> " + str(node)
+    out_string = ''
+    # out_string = 'Best route:\n' + str(solution[0])
+    # for node in solution[1:]:
+    #     out_string += " -> " + str(node)
     out_string += '\nDistance of the route: {}'.format(score)
     print(out_string)
 

@@ -71,9 +71,9 @@ def print_solution(wpp_path, distance):
     # print(out_string)
 
 if __name__ == '__main__':
-    
+    instances = ["WA0532","WA0535","WA0541","WA0542","WA0545","WA0551","WA1031","WA1531","WA2031","WA3031"]
     import os
-    for f in sorted(os.listdir("instances"))[1:10]:
+    for f in instances:
         fpath = os.path.join("instances", f)
         print(fpath)
         wpp(read_graph(fpath))

@@ -80,7 +80,7 @@ def anneal(graph, solution, score):
     init_temperature = 100
 
     # Mutate until 20 consecutive iterations without improvement
-    while (n_mutation <= 20):
+    while (n_mutation <= 10):
         # Cooldown temperature
         temperature = cooldown(init_temperature, n_mutation)
 

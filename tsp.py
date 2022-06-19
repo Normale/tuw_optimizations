@@ -56,5 +56,20 @@ def tsp(distances):
         # print_solution(manager, routing, assignment)
         return solution(routing, assignment)
 
+def tsp2(distances):
+    manager, routing = setup(distances)
+
+    search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+    # search_parameters.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+    search_parameters.local_search_metaheuristic = (
+        routing_enums_pb2.LocalSearchMetaheuristic.SIMULATED_ANNEALING)
+    search_parameters.time_limit.seconds = 30
+
+    assignment = routing.SolveWithParameters(search_parameters)
+
+    if assignment:
+        print_solution(manager, routing, assignment)
+        return solution(routing, assignment)
+
 if __name__ == '__main__':
     tsp(get_graph_dict(read_graph("instances\\toy"))["distances"])

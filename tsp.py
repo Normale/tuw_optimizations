@@ -53,7 +53,7 @@ def tsp(distances):
     assignment = routing.SolveWithParameters(search_parameters)
 
     if assignment:
-        print_solution(manager, routing, assignment)
+        # print_solution(manager, routing, assignment)
         return solution(routing, assignment)
 
 if __name__ == '__main__':

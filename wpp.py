@@ -1,4 +1,5 @@
 import networkx as nx
+from simulated_annealing import anneal
 from line_graph import convert_to_line_graph
 from tsp import tsp
 from parsing import get_graph_dict, read_graph
@@ -23,35 +24,23 @@ def wpp(graph):
     line_distances = graph_dict["distances"]
     paths = graph_dict["paths"]
     sequence, distance = tsp(line_distances)
-    # print(sequence)
-    # print(nodes)
 
-    # wpp_path = []
-
-    prev = -1
-    non_common = -1
-    test = []
+    line_solution = []
     for i in range(len(sequence) - 1):
         from_id = sequence[i]
         to_id = sequence[i + 1]
-        # from_node = nodes[from_id]
-        # to_node = nodes[to_id]
 
         subpath_ids = paths[from_id+1][to_id+1]
-        subpath_nodes = [nodes[n-1] for n in subpath_ids]
-        # common = (set(from_node) & set(to_node)).pop()  # common vertice of two edges
-        # if (prev == common):
-        #     wpp_path.append(non_common.pop())
-        # non_common = set(from_node) | set(to_node)
-        # non_common.discard(common)
-        # non_common.discard(prev)
-        # wpp_path.append(common)
-        # prev = common
-        if test and subpath_ids[0] == test[-1]:
-            test.pop()
-        test.extend(subpath_ids)
-    print_solution(test, distance, nodes)
-    from_linegraph_to_normal(test, nodes)
+
+        if line_solution and subpath_ids[0] == line_solution[-1]:
+            line_solution.pop()
+        line_solution.extend(subpath_ids)
+    # print_solution(line_solution, distance)
+    solution = from_linegraph_to_normal(line_solution, nodes)
+
+    # Final solution of simulated annealing
+    final_solution, final_score = anneal(graph, solution, distance)
+    return final_solution, final_score
 
 def from_linegraph_to_normal(path, nodes):
     vertice_path = []
@@ -69,44 +58,41 @@ def from_linegraph_to_normal(path, nodes):
         if i > 0 and vertice_path[i] == vertice_path[i - 1]:
             continue
         result.append(vertice_path[i])
-    print("View of original veertices: ")
-    print(' -> '.join(str(x) for x in result))
+    # print("View of original vertices: ")
+    # print(' -> '.join(str(x) for x in result))
     return result
 
-
-def print_solution(wpp_path, distance, nodes):
-    out_string = 'Best route:\n'
-    decoded_path = 'Best route as edges:\n'
+def print_solution(wpp_path, distance):
+    out_string = 'WPP route:\n'
     for node in wpp_path:
         out_string += str(node) + " -> "
-        decoded_path += f"{nodes[node-1]} -> "
     out_string += '1\n'
     out_string += 'Distance of the route: {}'.format(distance)
     # print(out_string)
-    # print(decoded_path)
 
 if __name__ == '__main__':
+    
     import os
     for f in sorted(os.listdir("instances"))[1:10]:
-        # print(f)
         fpath = os.path.join("instances", f)
         print(fpath)
         wpp(read_graph(fpath))
-
     
-    # # Dummy example discussed
-    # graph = nx.DiGraph()
-    # graph.add_nodes_from([1, 2, 3, 4])
-    # graph.add_edge(1, 2, weight=4)
-    # graph.add_edge(2, 1, weight=3)
-    # graph.add_edge(1, 3, weight=1)
-    # graph.add_edge(3, 1, weight=2)
-    # graph.add_edge(2, 3, weight=5)
-    # graph.add_edge(3, 2, weight=6)
-    # graph.add_edge(3, 4, weight=3)
-    # graph.add_edge(4, 3, weight=5)
-
-    # wpp(graph)
+    """
+    # Dummy example discussed
+    graph = nx.DiGraph()
+    graph.add_nodes_from([1, 2, 3, 4])
+    graph.add_edge(1, 2, weight=4)
+    graph.add_edge(2, 1, weight=3)
+    graph.add_edge(1, 3, weight=1)
+    graph.add_edge(3, 1, weight=2)
+    graph.add_edge(2, 3, weight=5)
+    graph.add_edge(3, 2, weight=6)
+    graph.add_edge(3, 4, weight=3)
+    graph.add_edge(4, 3, weight=5)
+    
+    wpp(graph)
+    """
 
     # # The following two are not found, KeyError is raised, because the line graph nodes are uniformised to have the lower indexed node first (2,3 instead of 3,2)
     # #print(distances[(1,2)][(3,2)])
